@@ -40,12 +40,14 @@ public class EveryNIterationWriter implements Evaluator {
       try {
         final String path = basePath+"."+current;
         model.write(path);
-        Util.printDbg("Written model to " + path);
+        if (logWrites) {
+          Util.printDbg("Written model to " + path);
+        }
       } catch (IOException e) {
         e.printStackTrace();
       }
-      current++;
     }
+    current++;
     return (otherEvaluator==null || otherEvaluator.evaluate());
   }
 }
