@@ -137,8 +137,8 @@ public class Segment {
         if ((value = options.getProperty("modelGraph")) != null) {
             modelGraphType = value;
         }
-        if ((value = options.getProperty("writeEvery")) != null) {
-          writeEvery = Integer.parseInt(value);
+        if ((value = options.getMandatoryProperty("write-every")) != null) {
+            writeEvery = Integer.parseInt(value);
         }
     }
     void  allocModel() throws Exception {
@@ -256,8 +256,13 @@ public class Segment {
 
         allocModel();
         featureGen.train(trainData);
+        boolean debugNWriter = options.getInt("debugLvl") > 1;
+        if (debugNWriter) {
+          Util.printDbg("configured to write a model every "+ writeEvery +" iterations");
+        }
         final Evaluator nWriter = (writeEvery > 0) ?
-          new EveryNIterationWriter(writeEvery,crfModel,baseDir+"/learntModels/"+outDir+"/crf")
+          new EveryNIterationWriter(writeEvery,crfModel,baseDir+"/learntModels/"+outDir+"/crf",
+              debugNWriter)
           : null;
         double featureWts[] = crfModel.train(trainData,nWriter);
         if (options.getInt("debugLvl") > 1) {
