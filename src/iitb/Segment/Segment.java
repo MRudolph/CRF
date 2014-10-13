@@ -260,6 +260,10 @@ public class Segment {
         if (debugNWriter) {
           Util.printDbg("configured to write a model every "+ writeEvery +" iterations");
         }
+      
+        //write the features before the model to make the incremental models useful
+        featureGen.write(baseDir+"/learntModels/"+outDir+"/features");
+
         final Evaluator nWriter = (writeEvery > 0) ?
           new EveryNIterationWriter(writeEvery,crfModel,baseDir+"/learntModels/"+outDir+"/crf",
               debugNWriter)
@@ -269,7 +273,6 @@ public class Segment {
             Util.printDbg("Training done");
         }
         crfModel.write(baseDir + "/learntModels/" + outDir + "/crf");
-        featureGen.write(baseDir+"/learntModels/"+outDir+"/features");
         if (options.getInt("debugLvl") > 1) {
             Util.printDbg("Writing model to "+ baseDir+"/learntModels/"+outDir+"/crf");
         }
