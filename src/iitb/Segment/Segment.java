@@ -137,6 +137,9 @@ public class Segment {
         if ((value = options.getProperty("modelGraph")) != null) {
             modelGraphType = value;
         }
+        if ((value = options.getProperty("writeEvery")) != null) {
+          writeEvery = Integer.parseInt(value);
+        }
     }
     void  allocModel() throws Exception {
         // add any code related to dependency/consistency amongst paramter
