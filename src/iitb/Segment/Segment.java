@@ -7,12 +7,7 @@
 package iitb.Segment;
 import iitb.BSegment.BFeatureGenImpl;
 import iitb.BSegmentCRF.BSegmentCRF;
-import iitb.CRF.CRF;
-import iitb.CRF.FeatureGenerator;
-import iitb.CRF.NestedCRF;
-import iitb.CRF.SegmentDataSequence;
-import iitb.CRF.Segmentation;
-import iitb.CRF.Util;
+import iitb.CRF.*;
 import iitb.Model.FeatureGenImpl;
 import iitb.Model.NestedFeatureGenImpl;
 import iitb.Utils.Options;
@@ -47,6 +42,9 @@ public class Segment {
 
     CRF crfModel;
     FeatureGenImpl featureGen;
+
+    int writeEvery = 0; //used for writing the model every n iterations
+
     public FeatureGenerator featureGenerator() {return featureGen;}
 
     public static void main(String argv[]) throws Exception {
@@ -255,11 +253,14 @@ public class Segment {
 
         allocModel();
         featureGen.train(trainData);
-        double featureWts[] = crfModel.train(trainData);
+        final Evaluator nWriter = (writeEvery > 0) ?
+          new EveryNIterationWriter(writeEvery,crfModel,baseDir+"/learntModels/"+outDir+"/crf")
+          : null;
+        double featureWts[] = crfModel.train(trainData,nWriter);
         if (options.getInt("debugLvl") > 1) {
             Util.printDbg("Training done");
         }
-        crfModel.write(baseDir+"/learntModels/"+outDir+"/crf");
+        crfModel.write(baseDir + "/learntModels/" + outDir + "/crf");
         featureGen.write(baseDir+"/learntModels/"+outDir+"/features");
         if (options.getInt("debugLvl") > 1) {
             Util.printDbg("Writing model to "+ baseDir+"/learntModels/"+outDir+"/crf");
